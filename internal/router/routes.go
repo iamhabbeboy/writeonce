@@ -1,26 +1,25 @@
 package router
 
 import (
-	"net/http"
-
 	"github.com/labstack/echo/v4"
 	"github.com/theterminalguy/writeonce/internal/handler"
 )
 
 func DefineRoutes(e *echo.Echo) *echo.Echo {
-	apiRouter := &Router{
-		Group: e.Group("api/"),
-		Routes: []*Route{
+	e.GET("/", handler.IndexHandler)
+
+	apiV1Router := &Router{
+		group:       e.Group("/api/v1"),
+		middlewares: []echo.MiddlewareFunc{},
+		handlers: []RouteHandler{
 			{
-				Path: "projects",
-				Methods: []string{
-					http.MethodPost,
-				},
-				Handler: handler.NewProjectHandler(),
+				Path:        "projects",
+				Only:        []Request{CREATE_ONE},
+				Handler:     handler.NewV1ProjectHandler(),
+				Middlewares: nil,
 			},
 		},
 	}
-	apiRouter.Register(e)
-
+	apiV1Router.BuildRoutes()
 	return e
 }
