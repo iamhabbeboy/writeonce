@@ -58,5 +58,13 @@ func (h *V1ProjectHandler) UpdateByID(c echo.Context) error {
 }
 
 func (h *V1ProjectHandler) DeleteOne(c echo.Context) error {
-	return nil
+	id, err := uuid.Parse(c.Param("uuid"))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	err = h.ProjectRepo.Delete(id)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusNoContent, nil)
 }

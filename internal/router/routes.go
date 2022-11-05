@@ -13,8 +13,14 @@ func DefineRoutes(e *echo.Echo) *echo.Echo {
 		middlewares: []echo.MiddlewareFunc{},
 		handlers: []RouteHandler{
 			{
-				Path:        "projects",
-				Only:        []Request{CREATE_ONE, READ_ALL},
+				Path: "projects",
+				Only: []Request{
+					READ_ALL,
+					READ_BY_ID,
+					CREATE_ONE,
+					UPDATE_BY_ID,
+					DELETE_BY_ID,
+				},
 				Handler:     handler.NewV1ProjectHandler(),
 				Middlewares: nil,
 			},
