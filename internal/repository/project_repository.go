@@ -45,3 +45,33 @@ func (r *ProjectRepository) Create(p ProjectParams) (*entity.Project, error) {
 	projects = append(projects, project)
 	return &project, nil
 }
+
+func (r *ProjectRepository) Get(id uuid.UUID) (*entity.Project, error) {
+	for _, project := range projects {
+		if project.ID == id {
+			return &project, nil
+		}
+	}
+	return nil, nil
+}
+
+func (r *ProjectRepository) Update(id uuid.UUID, p ProjectParams) (*entity.Project, error) {
+	for i, project := range projects {
+		if project.ID == id {
+			projects[i].Name = p.Name
+			projects[i].Description = p.Description
+			return &projects[i], nil
+		}
+	}
+	return nil, nil
+}
+
+func (r *ProjectRepository) Delete(id uuid.UUID) error {
+	for i, project := range projects {
+		if project.ID == id {
+			projects = append(projects[:i], projects[i+1:]...)
+			return nil
+		}
+	}
+	return nil
+}

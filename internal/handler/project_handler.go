@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	repo "github.com/theterminalguy/writeonce/internal/repository"
 )
@@ -26,7 +27,18 @@ func (h *V1ProjectHandler) ReadAll(c echo.Context) error {
 }
 
 func (h *V1ProjectHandler) ReadByID(c echo.Context) error {
-	return nil
+	id, err := uuid.Parse(c.Param("uuid"))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	record, err := h.ProjectRepo.Get(id)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	if record == nil {
+		return c.String(http.StatusNotFound, "record not found")
+	}
+	return c.JSON(http.StatusOK, record)
 }
 
 func (h *V1ProjectHandler) CreateOne(c echo.Context) error {
