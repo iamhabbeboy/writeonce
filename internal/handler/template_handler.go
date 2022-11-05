@@ -1,14 +1,97 @@
 package handler
 
-import "github.com/labstack/echo/v4"
+import (
+	"io/ioutil"
+	"net/http"
+	"strings"
 
-type TemplateHandler struct {
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+	repo "github.com/theterminalguy/writeonce/internal/repository"
+)
+
+type V1TemplateHandler struct {
+	TemplateRepo *repo.TemplateRepository
 }
 
-func NewTemplateHandler() *TemplateHandler {
-	return &TemplateHandler{}
+func NewV1TemplateHandler() *V1TemplateHandler {
+	return &V1TemplateHandler{
+		TemplateRepo: repo.NewTemplateRepository(),
+	}
 }
 
-func (h *TemplateHandler) Create(c echo.Context) error {
+func (h *V1TemplateHandler) Search(c echo.Context) error {
 	return nil
+}
+
+func (h *V1TemplateHandler) ReadAll(c echo.Context) error {
+	return c.JSON(http.StatusOK, h.TemplateRepo.GetAll())
+}
+
+func (h *V1TemplateHandler) ReadByID(c echo.Context) error {
+	id, err := uuid.Parse(c.Param("uuid"))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	record, err := h.TemplateRepo.Get(id)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	if record == nil {
+		return c.String(http.StatusNotFound, "record not found")
+	}
+	return c.JSON(http.StatusOK, record)
+}
+
+func (h *V1TemplateHandler) CreateOne(c echo.Context) error {
+	ct := c.Request().Header.Get(echo.HeaderContentType)
+
+	var params repo.TemplateParams
+	if strings.HasPrefix(ct, echo.MIMETextPlain) {
+		params.Name = c.FormValue("name")
+		params.Description = c.FormValue("description")
+
+		body := c.Request().Body
+		defer body.Close()
+		b, err := ioutil.ReadAll(body)
+		if err != nil {
+			return c.String(http.StatusBadRequest, err.Error())
+		}
+		params.Template = string(b)
+	} else if err := c.Bind(&params); err != nil {
+		return err
+	}
+	record, err := h.TemplateRepo.Create(params)
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusCreated, record)
+}
+
+func (h *V1TemplateHandler) UpdateByID(c echo.Context) error {
+	id, err := uuid.Parse(c.Param("uuid"))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	params := new(repo.TemplateParams)
+	if err := c.Bind(params); err != nil {
+		return err
+	}
+	record, err := h.TemplateRepo.Update(id, *params)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, record)
+}
+
+func (h *V1TemplateHandler) DeleteOne(c echo.Context) error {
+	id, err := uuid.Parse(c.Param("uuid"))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	err = h.TemplateRepo.Delete(id)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusNoContent, nil)
 }
