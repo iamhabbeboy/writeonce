@@ -14,7 +14,7 @@ func DefineRoutes(e *echo.Echo) *echo.Echo {
 		handlers: []RouteHandler{
 			{
 				Path:        "projects",
-				Only:        []Request{CREATE_ONE},
+				Only:        []Request{CREATE_ONE, READ_ALL},
 				Handler:     handler.NewV1ProjectHandler(),
 				Middlewares: nil,
 			},

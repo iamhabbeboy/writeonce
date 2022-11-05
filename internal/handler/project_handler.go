@@ -22,7 +22,7 @@ func (h *V1ProjectHandler) Search(c echo.Context) error {
 }
 
 func (h *V1ProjectHandler) ReadAll(c echo.Context) error {
-	return nil
+	return c.JSON(http.StatusOK, h.ProjectRepo.GetAll())
 }
 
 func (h *V1ProjectHandler) ReadByID(c echo.Context) error {

@@ -1,6 +1,13 @@
 package repository
 
-import "github.com/theterminalguy/writeonce/internal/entity"
+import (
+	"errors"
+
+	"github.com/google/uuid"
+	"github.com/theterminalguy/writeonce/internal/entity"
+)
+
+var projects []entity.Project
 
 type ProjectRepository struct {
 }
@@ -14,9 +21,27 @@ func NewProjectRepository() *ProjectRepository {
 	return &ProjectRepository{}
 }
 
+func (r *ProjectRepository) GetAll() []entity.Project {
+	return projects
+}
+
+var ErrProjectNameNotUnique = errors.New("project name not unique")
+
 func (r *ProjectRepository) Create(p ProjectParams) (*entity.Project, error) {
 	if err := ValidateParams(p); err != nil {
 		return nil, err
 	}
-	return nil, nil
+	// validate unique name: TODO this is for demo purposes only
+	for _, project := range projects {
+		if project.Name == p.Name {
+			return nil, ErrProjectNameNotUnique
+		}
+	}
+	project := entity.Project{
+		ID:          uuid.New(),
+		Name:        p.Name,
+		Description: p.Description,
+	}
+	projects = append(projects, project)
+	return &project, nil
 }
