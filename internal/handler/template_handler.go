@@ -8,10 +8,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	repo "github.com/theterminalguy/writeonce/internal/repository"
+	"github.com/theterminalguy/writeonce/internal/service"
 )
 
 type TemplateHandler struct {
-	TemplateRepo *repo.TemplateRepository
+	TemplateRepo    *repo.TemplateRepository
+	TemplateService *service.TemplateService
 }
 
 func NewTemplateHandler() *TemplateHandler {
@@ -62,7 +64,7 @@ func (h *TemplateHandler) CreateOne(c echo.Context) error {
 	} else if err := c.Bind(&params); err != nil {
 		return err
 	}
-	record, err := h.TemplateRepo.Create(params)
+	record, err := h.TemplateService.CreateTemplate(params)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

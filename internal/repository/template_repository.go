@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/theterminalguy/writeonce/internal/entity"
+	"github.com/theterminalguy/writeonce/internal/template"
 )
 
 type TemplateRepository struct {
@@ -16,6 +17,7 @@ type TemplateParams struct {
 	Name        string    `json:"name" validate:"required"`
 	Description string    `json:"description" validate:"required"`
 	Template    string    `json:"template" validate:"required"`
+	Placeholder []template.Placeholder
 }
 
 func NewTemplateRepository() *TemplateRepository {
