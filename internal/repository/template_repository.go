@@ -17,7 +17,7 @@ type TemplateParams struct {
 	Name        string    `json:"name" validate:"required"`
 	Description string    `json:"description" validate:"required"`
 	Template    string    `json:"template" validate:"required"`
-	Placeholder []template.Placeholder
+	Placeholders []template.Placeholder
 }
 
 func NewTemplateRepository() *TemplateRepository {
@@ -50,6 +50,8 @@ func (r *TemplateRepository) Create(p TemplateParams) (*entity.Template, error) 
 		Name:        p.Name,
 		Description: p.Description,
 		Template:    p.Template,
+		ProjectID:  p.ProjectID,
+		Placeholders: p.Placeholders,
 	}
 	templates = append(templates, template)
 	return &template, nil

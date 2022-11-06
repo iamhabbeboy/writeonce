@@ -18,7 +18,8 @@ type TemplateHandler struct {
 
 func NewTemplateHandler() *TemplateHandler {
 	return &TemplateHandler{
-		TemplateRepo: repo.NewTemplateRepository(),
+		TemplateRepo:    repo.NewTemplateRepository(),
+		TemplateService: service.NewTemplateService(),
 	}
 }
 

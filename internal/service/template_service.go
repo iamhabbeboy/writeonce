@@ -10,12 +10,12 @@ import (
 )
 
 type TemplateService struct {
-	TeplateRepo *repo.TemplateRepository
+	TemplateRepo *repo.TemplateRepository
 }
 
 func NewTemplateService() *TemplateService {
 	return &TemplateService{
-		TeplateRepo: repo.NewTemplateRepository(),
+		TemplateRepo: repo.NewTemplateRepository(),
 	}
 }
 
@@ -25,6 +25,6 @@ func (s *TemplateService) CreateTemplate(p repo.TemplateParams) (*entity.Templat
 		return nil, err
 	}
 	wrp := twrap.NewWrapper(tmpl)
-	p.Placeholder = wrp.ExtractPlaceholders()
-	return s.TeplateRepo.Create(p)
+	p.Placeholders = wrp.ExtractPlaceholders()
+	return s.TemplateRepo.Create(p)
 }
