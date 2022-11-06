@@ -8,16 +8,20 @@ import (
 )
 
 type TemplateRepository struct {
+	ProjectRepo *ProjectRepository
 }
 
 type TemplateParams struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description" validate:"required"`
-	Template    string `json:"template" validate:"required"`
+	ProjectID   uuid.UUID `json:"project_id" validate:"required"`
+	Name        string    `json:"name" validate:"required"`
+	Description string    `json:"description" validate:"required"`
+	Template    string    `json:"template" validate:"required"`
 }
 
 func NewTemplateRepository() *TemplateRepository {
-	return &TemplateRepository{}
+	return &TemplateRepository{
+		ProjectRepo: NewProjectRepository(),
+	}
 }
 
 func (r *TemplateRepository) GetAll() []entity.Template {
@@ -28,6 +32,9 @@ var ErrTemplateNameNotUnique = errors.New("template name not unique")
 
 func (r *TemplateRepository) Create(p TemplateParams) (*entity.Template, error) {
 	if err := ValidateParams(p); err != nil {
+		return nil, err
+	}
+	if _, err := r.ProjectRepo.Get(p.ProjectID); err != nil {
 		return nil, err
 	}
 	// validate unique name: TODO this is for demo purposes only

@@ -9,7 +9,7 @@ func DefineRoutes(e *echo.Echo) *echo.Echo {
 	e.GET("/", handler.IndexHandler)
 
 	apiV1Router := &Router{
-		group:       e.Group("/api/v1"),
+		group:       e.Group("/api"),
 		middlewares: []echo.MiddlewareFunc{},
 		handlers: []RouteHandler{
 			{
@@ -21,7 +21,7 @@ func DefineRoutes(e *echo.Echo) *echo.Echo {
 					UPDATE_BY_ID,
 					DELETE_BY_ID,
 				},
-				Handler:     handler.NewV1ProjectHandler(),
+				Handler:     handler.NewProjectHandler(),
 				Middlewares: nil,
 			},
 			{
@@ -33,8 +33,15 @@ func DefineRoutes(e *echo.Echo) *echo.Echo {
 					UPDATE_BY_ID,
 					DELETE_BY_ID,
 				},
-				Handler:     handler.NewV1TemplateHandler(),
+				Handler:     handler.NewTemplateHandler(),
 				Middlewares: nil,
+			},
+			{
+				Path: "generate/projects/:project_id/templates/:template_id",
+				Only: []Request{
+					CREATE_ONE,
+				},
+				Handler: handler.NewGenerateHandler(),
 			},
 		},
 	}

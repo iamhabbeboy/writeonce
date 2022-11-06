@@ -10,25 +10,25 @@ import (
 	repo "github.com/theterminalguy/writeonce/internal/repository"
 )
 
-type V1TemplateHandler struct {
+type TemplateHandler struct {
 	TemplateRepo *repo.TemplateRepository
 }
 
-func NewV1TemplateHandler() *V1TemplateHandler {
-	return &V1TemplateHandler{
+func NewTemplateHandler() *TemplateHandler {
+	return &TemplateHandler{
 		TemplateRepo: repo.NewTemplateRepository(),
 	}
 }
 
-func (h *V1TemplateHandler) Search(c echo.Context) error {
+func (h *TemplateHandler) Search(c echo.Context) error {
 	return nil
 }
 
-func (h *V1TemplateHandler) ReadAll(c echo.Context) error {
+func (h *TemplateHandler) ReadAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, h.TemplateRepo.GetAll())
 }
 
-func (h *V1TemplateHandler) ReadByID(c echo.Context) error {
+func (h *TemplateHandler) ReadByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -43,11 +43,12 @@ func (h *V1TemplateHandler) ReadByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *V1TemplateHandler) CreateOne(c echo.Context) error {
+func (h *TemplateHandler) CreateOne(c echo.Context) error {
 	ct := c.Request().Header.Get(echo.HeaderContentType)
 
 	var params repo.TemplateParams
 	if strings.HasPrefix(ct, echo.MIMETextPlain) {
+		params.ProjectID = uuid.MustParse(c.FormValue("project_id"))
 		params.Name = c.FormValue("name")
 		params.Description = c.FormValue("description")
 
@@ -68,7 +69,7 @@ func (h *V1TemplateHandler) CreateOne(c echo.Context) error {
 	return c.JSON(http.StatusCreated, record)
 }
 
-func (h *V1TemplateHandler) UpdateByID(c echo.Context) error {
+func (h *TemplateHandler) UpdateByID(c echo.Context) error {
 	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -84,7 +85,7 @@ func (h *V1TemplateHandler) UpdateByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, record)
 }
 
-func (h *V1TemplateHandler) DeleteOne(c echo.Context) error {
+func (h *TemplateHandler) DeleteOne(c echo.Context) error {
 	id, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
