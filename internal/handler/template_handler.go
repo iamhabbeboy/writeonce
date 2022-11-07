@@ -51,7 +51,11 @@ func (h *TemplateHandler) CreateOne(c echo.Context) error {
 
 	var params repo.TemplateParams
 	if strings.HasPrefix(ct, echo.MIMETextPlain) {
-		params.ProjectID = uuid.MustParse(c.FormValue("project_id"))
+		id, err := uuid.Parse(c.FormValue("project_id"))
+		if err != nil {
+			return c.String(http.StatusBadRequest, err.Error())
+		}
+		params.ProjectID = id
 		params.Name = c.FormValue("name")
 		params.Description = c.FormValue("description")
 

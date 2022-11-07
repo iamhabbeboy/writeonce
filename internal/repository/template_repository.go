@@ -13,10 +13,10 @@ type TemplateRepository struct {
 }
 
 type TemplateParams struct {
-	ProjectID   uuid.UUID `json:"project_id" validate:"required"`
-	Name        string    `json:"name" validate:"required"`
-	Description string    `json:"description" validate:"required"`
-	Template    string    `json:"template" validate:"required"`
+	ProjectID    uuid.UUID `json:"project_id" validate:"required"`
+	Name         string    `json:"name" validate:"required"`
+	Description  string    `json:"description" validate:"required"`
+	Template     string    `json:"template" validate:"required"`
 	Placeholders []template.Placeholder
 }
 
@@ -46,11 +46,11 @@ func (r *TemplateRepository) Create(p TemplateParams) (*entity.Template, error) 
 		}
 	}
 	template := entity.Template{
-		ID:          uuid.New(),
-		Name:        p.Name,
-		Description: p.Description,
-		Template:    p.Template,
-		ProjectID:  p.ProjectID,
+		ID:           uuid.New(),
+		Name:         p.Name,
+		Description:  p.Description,
+		Template:     p.Template,
+		ProjectID:    p.ProjectID,
 		Placeholders: p.Placeholders,
 	}
 	templates = append(templates, template)
