@@ -15,3 +15,5 @@
 # vendor/
 routes.json
 
+.air.toml
+tmp/*
