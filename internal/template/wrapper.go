@@ -1,6 +1,7 @@
 package template
 
 import (
+	"io"
 	"text/template"
 	"text/template/parse"
 )
@@ -43,4 +44,8 @@ func (t *Wrapper) ExtractPlaceholders() (placeholders []Placeholder) {
 		}
 	}
 	return
+}
+
+func (t *Wrapper) Execute(dst io.Writer, data map[string]string) error {
+	return t.t.Execute(dst, data)
 }

@@ -1,14 +1,21 @@
 package handler
 
 import (
+	"net/http"
+
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/writeonce/internal/service"
 )
 
 type GenerateHandler struct {
+	TemplateService *service.TemplateService
 }
 
 func NewGenerateHandler() *GenerateHandler {
-	return &GenerateHandler{}
+	return &GenerateHandler{
+		TemplateService: service.NewTemplateService(),
+	}
 }
 
 func (h *GenerateHandler) Create(c echo.Context) error {
@@ -28,7 +35,25 @@ func (h *GenerateHandler) ReadByID(c echo.Context) error {
 }
 
 func (h *GenerateHandler) CreateOne(c echo.Context) error {
-	return c.JSON(200, "Hello World")
+	params := new(service.GenerateParams)
+	if err := c.Bind(params); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	projectID, err := uuid.Parse(c.Param("project_id"))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	templateID, err := uuid.Parse(c.Param("template_id"))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	params.ProjectID = projectID
+	params.TemplateID = templateID
+	tmplStr, err := h.TemplateService.Generate(*params)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.String(http.StatusOK, tmplStr)
 }
 
 func (h *GenerateHandler) UpdateByID(c echo.Context) error {
