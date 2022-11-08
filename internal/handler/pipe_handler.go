@@ -55,7 +55,22 @@ func (h *PipeHandler) CreateOne(c echo.Context) error {
 }
 
 func (h *PipeHandler) UpdateByID(c echo.Context) error {
-	return nil
+	id, err := uuid.Parse(c.Param("uuid"))
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	params := new(entity.Pipe)
+	if err := c.Bind(params); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	record, err := h.PipeRepo.Update(id, *params)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	if record == nil {
+		return c.String(http.StatusNotFound, "record not found")
+	}
+	return c.JSON(http.StatusOK, record)
 }
 
 func (h *PipeHandler) DeleteOne(c echo.Context) error {

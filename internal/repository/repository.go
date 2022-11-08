@@ -36,7 +36,16 @@ func init() {
 			Name:        "Pipe 1",
 			Description: "Description 1",
 			Endpoint:    "https://example.com",
-			Schema:      `{"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}`,
+			Schema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"name": map[string]interface{}{
+						"type": "string",
+					}},
+				"required": []string{
+					"name",
+				},
+			},
 			Headers: []entity.HTTPHeader{
 				{
 					Name:     "Authorization",

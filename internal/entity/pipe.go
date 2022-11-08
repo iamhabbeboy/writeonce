@@ -19,7 +19,7 @@ type Pipe struct {
 	Endpoint string `json:"url"`
 
 	// Schema is the JSON schema of the parameters.
-	Schema string `json:"schema"`
+	Schema interface{} `json:"schema"`
 
 	// Headers is a list of headers that the pipe accepts.
 	Headers []HTTPHeader `json:"headers"`

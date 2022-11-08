@@ -26,6 +26,19 @@ func (r *PipeRepository) Get(id uuid.UUID) (*entity.Pipe, error) {
 }
 
 func (r *PipeRepository) Create(pipe entity.Pipe) (*entity.Pipe, error) {
+	pipe.ID = uuid.New()
 	pipes = append(pipes, pipe)
 	return &pipe, nil
+}
+
+func (r *PipeRepository) Update(id uuid.UUID, pipe entity.Pipe) (*entity.Pipe, error) {
+	record, err := r.Get(id)
+	if err != nil {
+		return nil, err
+	}
+	if record == nil {
+		return nil, nil
+	}
+	record = &pipe
+	return record, nil
 }
