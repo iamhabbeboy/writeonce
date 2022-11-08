@@ -37,11 +37,25 @@ func DefineRoutes(e *echo.Echo) *echo.Echo {
 				Middlewares: nil,
 			},
 			{
-				Path: "generate/projects/:project_id/templates/:template_id",
-				Only: []Request{
-					CREATE_ONE,
-				},
+				Path:    "generate/templates/:template_id",
+				Only:    []Request{CREATE_ONE},
 				Handler: handler.NewGenerateHandler(),
+			},
+			{
+				Path: "pipes",
+				Only: []Request{
+					READ_ALL,
+					READ_BY_ID,
+					CREATE_ONE,
+					UPDATE_BY_ID,
+					DELETE_BY_ID,
+				},
+				Handler: handler.NewPipeHandler(),
+			},
+			{
+				Path:    "pipeline",
+				Only:    []Request{CREATE_ONE},
+				Handler: handler.NewPipelineHandler(),
 			},
 		},
 	}

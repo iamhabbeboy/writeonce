@@ -39,15 +39,10 @@ func (h *GenerateHandler) CreateOne(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	projectID, err := uuid.Parse(c.Param("project_id"))
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
 	templateID, err := uuid.Parse(c.Param("template_id"))
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	params.ProjectID = projectID
 	params.TemplateID = templateID
 	tmplStr, err := h.TemplateService.Generate(*params)
 	if err != nil {

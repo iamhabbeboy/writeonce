@@ -2,7 +2,6 @@ package service
 
 import (
 	"bytes"
-	"errors"
 	"text/template"
 
 	"github.com/google/uuid"
@@ -42,9 +41,6 @@ func (s *TemplateService) Generate(p GenerateParams) (string, error) {
 	t, err := s.TemplateRepo.Get(p.TemplateID)
 	if err != nil {
 		return "", err
-	}
-	if t.ProjectID != p.ProjectID {
-		return "", errors.New("invalid project id")
 	}
 	tmpl, err := template.New(t.Name).Parse(t.Template)
 	if err != nil {

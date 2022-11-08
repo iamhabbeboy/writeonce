@@ -24,14 +24,3 @@ type Pipe struct {
 	// Headers is a list of headers that the pipe accepts.
 	Headers []HTTPHeader `json:"headers"`
 }
-
-type PipeInput struct {
-	PipeID uuid.UUID `json:"id"`
-	// Parameters is the JSON object that is sent to the pipe.
-	Parameters string `json:"parameters"`
-
-	// Headers is a list of headers that are sent to the pipe.
-	Headers map[string]string `json:"headers"`
-
-	TemplateID uuid.UUID `json:"template_id"`
-}

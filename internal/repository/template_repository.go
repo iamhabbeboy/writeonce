@@ -63,7 +63,7 @@ func (r *TemplateRepository) Get(id uuid.UUID) (*entity.Template, error) {
 			return &template, nil
 		}
 	}
-	return nil, nil
+	return nil, errors.New("template not found")
 }
 
 func (r *TemplateRepository) Update(id uuid.UUID, p TemplateParams) (*entity.Template, error) {
