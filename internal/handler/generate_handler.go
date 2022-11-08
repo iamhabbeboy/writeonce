@@ -48,7 +48,7 @@ func (h *GenerateHandler) CreateOne(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	return c.String(http.StatusOK, tmplStr)
+	return c.JSON(http.StatusOK, tmplStr)
 }
 
 func (h *GenerateHandler) UpdateByID(c echo.Context) error {

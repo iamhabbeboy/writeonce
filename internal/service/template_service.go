@@ -37,19 +37,25 @@ type GenerateParams struct {
 	Variables  map[string]string `json:"variables"`
 }
 
-func (s *TemplateService) Generate(p GenerateParams) (string, error) {
+func (s *TemplateService) Generate(p GenerateParams) (*entity.ParsedTemplate, error) {
 	t, err := s.TemplateRepo.Get(p.TemplateID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	tmpl, err := template.New(t.Name).Parse(t.Template)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	wrp := twrap.NewWrapper(tmpl)
 	var dst bytes.Buffer
 	if err := wrp.Execute(&dst, p.Variables); err != nil {
-		return "", err
+		return nil, err
 	}
-	return dst.String(), nil
+	return &entity.ParsedTemplate{
+		Body: dst.String(),
+		MetaData: &entity.ParsedTemplateMeta{
+			Name:    t.Name,
+			Version: t.Version,
+		},
+	}, nil
 }
