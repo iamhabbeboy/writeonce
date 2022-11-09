@@ -35,10 +35,8 @@ func (h *PipelineHandler) CreateOne(c echo.Context) error {
 	if err := c.Bind(params); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	err := h.PipelineService.Run(params)
-	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
+	// run pipeline in background
+	go h.PipelineService.Run(params)
 	return c.JSON(http.StatusOK, params)
 }
 

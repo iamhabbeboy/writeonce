@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/theterminalguy/writeonce/internal/entity"
@@ -32,58 +33,71 @@ type TemplatePipeParams struct {
 	} `json:"meta_data"`
 }
 
-func (s *PipelineService) Run(pipeline *entity.Pipeline) error {
+func (s *PipelineService) Run(pipeline *entity.Pipeline) {
 	t, err := s.ts.Generate(GenerateParams{
 		TemplateID: pipeline.Template.ID,
 		Variables:  pipeline.Template.Variables,
 	})
 	if err != nil {
-		return err
+		return
 	}
-	for _, pipeInput := range pipeline.Pipes {
-		record, err := s.PipeRepo.Get(pipeInput.PipeID)
+	var errs []entity.PipeStatus
+
+	for _, pipe := range pipeline.Pipes {
+		record, err := s.PipeRepo.Get(pipe.PipeID)
 		if err != nil {
-			return err
+			errs = append(errs, entity.PipeStatus{ID: pipe.PipeID, Err: err})
+			continue
 		}
+		// set request body
+		// this is a combination of the parsed template the pipes input parameters
 		reqBody := map[string]interface{}{
 			"template":   t,
-			"parameters": pipeInput.Parameters,
+			"parameters": pipe.Parameters,
 		}
 		bodyBytes, err := json.Marshal(reqBody)
 		if err != nil {
-			return err
+			errs = append(errs, entity.PipeStatus{ID: pipe.PipeID, Err: err})
+			continue
 		}
 		req, err := http.NewRequest(http.MethodPost, record.Endpoint, bytes.NewBuffer(bodyBytes))
 		if err != nil {
-			return err
+			errs = append(errs, entity.PipeStatus{ID: pipe.PipeID, Err: err})
+			continue
 		}
 		req.Header.Set("Content-Type", "application/json")
+		// set additional headers
+		for k, v := range pipe.Headers {
+			req.Header.Set(k, v)
+		}
 		resp, err := http.DefaultClient.Do(req)
+
+		// first check if the remote service is available
+		if resp == nil {
+			errs = append(errs, entity.PipeStatus{ID: pipe.PipeID, Err: fmt.Errorf("remote service is not available")})
+			continue
+		}
 		if err != nil {
-			return err
+			errs = append(errs, entity.PipeStatus{ID: pipe.PipeID, Err: err, HTTPStatus: resp.StatusCode})
+			continue
 		}
 		defer resp.Body.Close()
 		// check response status code no in 200 range
 		if resp.StatusCode < 200 || resp.StatusCode > 299 {
-			return fmt.Errorf("pipe %s returned status code %d", record.Name, resp.StatusCode)
+			errs = append(errs,
+				entity.PipeStatus{
+					ID:         pipe.PipeID,
+					Err:        fmt.Errorf("pipe %s returned status code %d", record.Name, resp.StatusCode),
+					HTTPStatus: resp.StatusCode,
+				})
+			continue
 		}
-		// check response body for error
-		/*var respBody struct {
-			Error string `json:"error"`
-		}
-		if err := json.NewDecoder(resp.Body).Decode(&respBody); err != nil {
-			return err
-		}
-		if respBody.Error != "" {
-			return fmt.Errorf("pipe %s returned error: %s", record.Name, respBody.Error)
-		}*/
-
-		// print response body as string
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return err
+			errs = append(errs, entity.PipeStatus{ID: pipe.PipeID, Err: err})
+			continue
 		}
-		fmt.Println(string(respBody))
+		fmt.Println("Response Body:", string(respBody))
 	}
-	return nil
+	log.Println(errs)
 }

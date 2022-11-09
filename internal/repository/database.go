@@ -36,7 +36,7 @@ func init() {
 			ID:          uuid.MustParse("3e42bd93-a627-4a13-8a84-e8e80b6b3763"),
 			Name:        "Pipe 1",
 			Description: "Description 1",
-			Endpoint:    "http://127.0.0.1:4567/generate-pdf",
+			Endpoint:    "http://localhost:4567/generate-pdf",
 			Schema: map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
@@ -53,6 +53,12 @@ func init() {
 					Required: true,
 				},
 			},
+		},
+		{
+			ID:          uuid.MustParse("4e42bd93-a627-4a13-8a84-e8e80b6b3763"),
+			Name:        "Pipe 2",
+			Description: "Description 2",
+			Endpoint:    "https://jsonplaceholder.typicode.com/todos",
 		},
 	}
 }

@@ -13,6 +13,19 @@ type PipeInput struct {
 	Headers map[string]string `json:"headers"`
 }
 
+type PipeStatus struct {
+	ID         uuid.UUID `json:"id"`
+	Err        error     `json:"error"`
+	HTTPStatus int       `json:"http_status"`
+}
+
+func (p *PipeStatus) Unwrap() error {
+	return p.Err
+}
+func (p *PipeStatus) Error() string {
+	return p.Err.Error()
+}
+
 type Pipeline struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
