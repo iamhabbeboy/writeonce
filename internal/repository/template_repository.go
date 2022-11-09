@@ -63,7 +63,7 @@ func (r *TemplateRepository) Get(id uuid.UUID) (*entity.Template, error) {
 			return &template, nil
 		}
 	}
-	return nil, entity.ErrNotFound
+	return nil, entity.ErrTemplateNotFound
 }
 
 func (r *TemplateRepository) Update(id uuid.UUID, p TemplateParams) (*entity.Template, error) {
@@ -74,7 +74,7 @@ func (r *TemplateRepository) Update(id uuid.UUID, p TemplateParams) (*entity.Tem
 			return &templates[i], nil
 		}
 	}
-	return nil, entity.ErrNotFound
+	return nil, entity.ErrTemplateNotFound
 }
 
 func (r *TemplateRepository) Delete(id uuid.UUID) error {
@@ -84,5 +84,5 @@ func (r *TemplateRepository) Delete(id uuid.UUID) error {
 			return nil
 		}
 	}
-	return entity.ErrNotFound
+	return entity.ErrTemplateNotFound
 }

@@ -22,7 +22,7 @@ func (r *PipeRepository) Get(id uuid.UUID) (*entity.Pipe, error) {
 			return &pipe, nil
 		}
 	}
-	return nil, entity.ErrNotFound
+	return nil, entity.ErrPipeNotFound
 }
 
 func (r *PipeRepository) Create(pipe entity.Pipe) (*entity.Pipe, error) {

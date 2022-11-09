@@ -47,7 +47,7 @@ func (r *ProjectRepository) Get(id uuid.UUID) (*entity.Project, error) {
 			return &project, nil
 		}
 	}
-	return nil, entity.ErrNotFound
+	return nil, entity.ErrProjectNotFound
 }
 
 func (r *ProjectRepository) Update(id uuid.UUID, p ProjectParams) (*entity.Project, error) {
@@ -67,5 +67,5 @@ func (r *ProjectRepository) Delete(id uuid.UUID) error {
 			return nil
 		}
 	}
-	return entity.ErrNotFound
+	return entity.ErrProjectNotFound
 }

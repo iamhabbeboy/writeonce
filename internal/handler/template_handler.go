@@ -1,8 +1,9 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -63,7 +64,7 @@ func (h *TemplateHandler) CreateOne(c echo.Context) error {
 
 		body := c.Request().Body
 		defer body.Close()
-		b, err := ioutil.ReadAll(body)
+		b, err := io.ReadAll(body)
 		if err != nil {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
@@ -88,6 +89,9 @@ func (h *TemplateHandler) UpdateByID(c echo.Context) error {
 		return err
 	}
 	record, err := h.TemplateRepo.Update(id, *params)
+	if errors.Is(err, entity.ErrNotFound) {
+		return c.String(http.StatusNotFound, err.Error())
+	}
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}

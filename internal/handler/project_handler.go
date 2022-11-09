@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -34,8 +34,8 @@ func (h *ProjectHandler) ReadByID(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	record, err := h.ProjectRepo.Get(id)
-	if err == entity.ErrNotFound {
-		return c.String(http.StatusNotFound, fmt.Sprintf("Project with ID %s not found", id))
+	if errors.Is(err, entity.ErrNotFound) {
+		return c.String(http.StatusNotFound, err.Error())
 	}
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
