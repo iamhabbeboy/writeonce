@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -33,11 +34,11 @@ func (h *PipeHandler) ReadByID(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	record, err := h.PipeRepo.Get(id)
+	if err == entity.ErrNotFound {
+		return c.String(http.StatusNotFound, fmt.Sprintf("Pipe with ID %s not found", id))
+	}
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
-	}
-	if record == nil {
-		return c.String(http.StatusNotFound, "record not found")
 	}
 	return c.JSON(http.StatusOK, record)
 }

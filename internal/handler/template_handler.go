@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/writeonce/internal/entity"
 	repo "github.com/theterminalguy/writeonce/internal/repository"
 	"github.com/theterminalguy/writeonce/internal/service"
 )
@@ -37,11 +39,11 @@ func (h *TemplateHandler) ReadByID(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	record, err := h.TemplateRepo.Get(id)
+	if err == entity.ErrNotFound {
+		return c.String(http.StatusNotFound, fmt.Sprintf("Template with ID %s not found", id))
+	}
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
-	}
-	if record == nil {
-		return c.String(http.StatusNotFound, "record not found")
 	}
 	return c.JSON(http.StatusOK, record)
 }

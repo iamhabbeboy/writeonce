@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/theterminalguy/writeonce/internal/entity"
 	repo "github.com/theterminalguy/writeonce/internal/repository"
 )
 
@@ -32,11 +34,11 @@ func (h *ProjectHandler) ReadByID(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	record, err := h.ProjectRepo.Get(id)
+	if err == entity.ErrNotFound {
+		return c.String(http.StatusNotFound, fmt.Sprintf("Project with ID %s not found", id))
+	}
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
-	}
-	if record == nil {
-		return c.String(http.StatusNotFound, "record not found")
 	}
 	return c.JSON(http.StatusOK, record)
 }

@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"errors"
-
 	"github.com/google/uuid"
 	"github.com/theterminalguy/writeonce/internal/entity"
 )
@@ -24,7 +22,7 @@ func (r *PipeRepository) Get(id uuid.UUID) (*entity.Pipe, error) {
 			return &pipe, nil
 		}
 	}
-	return nil, errors.New("pipe not found")
+	return nil, entity.ErrNotFound
 }
 
 func (r *PipeRepository) Create(pipe entity.Pipe) (*entity.Pipe, error) {
@@ -38,9 +36,10 @@ func (r *PipeRepository) Update(id uuid.UUID, pipe entity.Pipe) (*entity.Pipe, e
 	if err != nil {
 		return nil, err
 	}
-	if record == nil {
-		return nil, nil
-	}
-	record = &pipe
+	record.Name = pipe.Name
+	record.Description = pipe.Description
+	record.Endpoint = pipe.Endpoint
+	record.Schema = pipe.Schema
+	record.Headers = pipe.Headers
 	return record, nil
 }

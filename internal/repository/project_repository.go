@@ -22,8 +22,6 @@ func (r *ProjectRepository) GetAll() []entity.Project {
 	return projects
 }
 
-var ErrProjectNameNotUnique = errors.New("project name not unique")
-
 func (r *ProjectRepository) Create(p ProjectParams) (*entity.Project, error) {
 	if err := ValidateParams(p); err != nil {
 		return nil, err
@@ -31,7 +29,7 @@ func (r *ProjectRepository) Create(p ProjectParams) (*entity.Project, error) {
 	// validate unique name: TODO this is for demo purposes only
 	for _, project := range projects {
 		if project.Name == p.Name {
-			return nil, ErrProjectNameNotUnique
+			return nil, errors.New("project name not unique")
 		}
 	}
 	project := entity.Project{
@@ -49,18 +47,17 @@ func (r *ProjectRepository) Get(id uuid.UUID) (*entity.Project, error) {
 			return &project, nil
 		}
 	}
-	return nil, nil
+	return nil, entity.ErrNotFound
 }
 
 func (r *ProjectRepository) Update(id uuid.UUID, p ProjectParams) (*entity.Project, error) {
-	for i, project := range projects {
-		if project.ID == id {
-			projects[i].Name = p.Name
-			projects[i].Description = p.Description
-			return &projects[i], nil
-		}
+	record, err := r.Get(id)
+	if err != nil {
+		return nil, err
 	}
-	return nil, nil
+	record.Name = p.Name
+	record.Description = p.Description
+	return record, nil
 }
 
 func (r *ProjectRepository) Delete(id uuid.UUID) error {
@@ -70,5 +67,5 @@ func (r *ProjectRepository) Delete(id uuid.UUID) error {
 			return nil
 		}
 	}
-	return nil
+	return entity.ErrNotFound
 }
