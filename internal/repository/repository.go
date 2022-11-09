@@ -35,7 +35,7 @@ func init() {
 			ID:          uuid.MustParse("3e42bd93-a627-4a13-8a84-e8e80b6b3763"),
 			Name:        "Pipe 1",
 			Description: "Description 1",
-			Endpoint:    "https://example.com",
+			Endpoint:    "http://127.0.0.1:4567/generate-pdf",
 			Schema: map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{

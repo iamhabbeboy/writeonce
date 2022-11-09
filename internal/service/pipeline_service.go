@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/theterminalguy/writeonce/internal/entity"
@@ -26,9 +27,8 @@ func NewPipelineService() *PipelineService {
 type TemplatePipeParams struct {
 	Body     string `json:"body"`
 	MetaData struct {
-		Name    string   `json:"name"`
-		Tags    []string `json:"tags"`
-		Version string   `json:"version"`
+		Name string   `json:"name"`
+		Tags []string `json:"tags"`
 	} `json:"meta_data"`
 }
 
@@ -63,7 +63,27 @@ func (s *PipelineService) Run(pipeline *entity.Pipeline) error {
 			return err
 		}
 		defer resp.Body.Close()
-		fmt.Println(resp)
+		// check response status code no in 200 range
+		if resp.StatusCode < 200 || resp.StatusCode > 299 {
+			return fmt.Errorf("pipe %s returned status code %d", record.Name, resp.StatusCode)
+		}
+		// check response body for error
+		/*var respBody struct {
+			Error string `json:"error"`
+		}
+		if err := json.NewDecoder(resp.Body).Decode(&respBody); err != nil {
+			return err
+		}
+		if respBody.Error != "" {
+			return fmt.Errorf("pipe %s returned error: %s", record.Name, respBody.Error)
+		}*/
+
+		// print response body as string
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(respBody))
 	}
 	return nil
 }

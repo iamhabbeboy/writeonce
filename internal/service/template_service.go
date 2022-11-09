@@ -54,8 +54,7 @@ func (s *TemplateService) Generate(p GenerateParams) (*entity.ParsedTemplate, er
 	return &entity.ParsedTemplate{
 		Body: dst.String(),
 		MetaData: &entity.ParsedTemplateMeta{
-			Name:    t.Name,
-			Version: t.Version,
+			Name: t.Name,
 		},
 	}, nil
 }

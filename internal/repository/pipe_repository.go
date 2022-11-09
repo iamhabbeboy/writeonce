@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 	"github.com/theterminalguy/writeonce/internal/entity"
 )
@@ -22,7 +24,7 @@ func (r *PipeRepository) Get(id uuid.UUID) (*entity.Pipe, error) {
 			return &pipe, nil
 		}
 	}
-	return nil, nil
+	return nil, errors.New("pipe not found")
 }
 
 func (r *PipeRepository) Create(pipe entity.Pipe) (*entity.Pipe, error) {

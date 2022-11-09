@@ -7,7 +7,6 @@ import (
 
 type Template struct {
 	ID           uuid.UUID              `json:"id"`
-	Version      string                 `json:"version"`
 	ProjectID    uuid.UUID              `json:"project_id"`
 	Name         string                 `json:"name"`
 	Description  string                 `json:"description"`
@@ -16,8 +15,7 @@ type Template struct {
 }
 
 type ParsedTemplateMeta struct {
-	Name    string `json:"name"`
-	Version string `json:"version"`
+	Name string `json:"name"`
 }
 type ParsedTemplate struct {
 	Body     string `json:"body"`
